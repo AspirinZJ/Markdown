@@ -1,0 +1,11 @@
+{
+   "age" : 25,
+   "friends" : {
+      "friend_age" : 25,
+      "friend_name" : "Test",
+      "friend_sex" : "male"
+   },
+   "hobby" : [ "video games", "anime", "electronics" ],
+   "name" : "Jack",
+   "sex" : "male"
+}
