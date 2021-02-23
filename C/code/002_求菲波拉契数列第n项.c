@@ -2,8 +2,8 @@
 
 int fibonacci(int n)
 {
-	if (1 == n) { return 1;}
-	else if (2 == n ) { return 2;}
+	if (1 == n) { return 1; }
+	else if (2 == n) { return 2; }
 	return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
