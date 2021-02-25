@@ -1,45 +1,12 @@
 # CMake 入门实战
 
-
-
-从实例入手，讲解 CMake 的常见用法。
-
-**Contents**
-
-- [什么是 CMake](https://www.hahack.com/codes/cmake/#什么是-cmake)
-- [入门案例：单个源文件](https://www.hahack.com/codes/cmake/#入门案例：单个源文件)
-- [多个源文件](https://www.hahack.com/codes/cmake/#多个源文件)
-- [自定义编译选项](https://www.hahack.com/codes/cmake/#自定义编译选项)
-- [安装和测试](https://www.hahack.com/codes/cmake/#安装和测试)
-- [支持 gdb](https://www.hahack.com/codes/cmake/#支持-gdb)
-- [添加环境检查](https://www.hahack.com/codes/cmake/#添加环境检查)
-- [添加版本号](https://www.hahack.com/codes/cmake/#添加版本号)
-- [生成安装包](https://www.hahack.com/codes/cmake/#生成安装包)
-- [将其他平台的项目迁移到 CMake](https://www.hahack.com/codes/cmake/#将其他平台的项目迁移到-cmake)
-- [相关链接](https://www.hahack.com/codes/cmake/#相关链接)
-- [类似工具](https://www.hahack.com/codes/cmake/#类似工具)
-
-## 什么是 CMake
-
-
-
-> All problems in computer science can be solved by another level of indirection.
->
-> **David Wheeler**
-
-你或许听过好几种 Make 工具，例如 [GNU Make](https://www.hahack.com/wiki/tools-makefile.html) ，QT 的 [qmake](http://qt-project.org/doc/qt-4.8/qmake-manual.html) ，微软的 [MS nmake](http://msdn.microsoft.com/en-us/library/ms930369.aspx)，BSD Make（[pmake](http://www.freebsd.org/doc/en/books/pmake/)），[Makepp](http://makepp.sourceforge.net/)，等等。这些 Make 工具遵循着不同的规范和标准，所执行的 Makefile 格式也千差万别。这样就带来了一个严峻的问题：如果软件想跨平台，必须要保证能够在不同平台编译。而如果使用上面的 Make 工具，就得为每一种标准写一次 Makefile ，这将是一件让人抓狂的工作。
-
-CMake就是针对上面问题所设计的工具：它首先允许开发者编写一种平台无关的 CMakeList.txt 文件来定制整个编译流程，然后再根据目标用户的平台进一步生成所需的本地化 Makefile 和工程文件，如 Unix 的 Makefile 或 Windows 的 Visual Studio 工程。从而做到“Write once, run everywhere”。显然，CMake 是一个比上述几种 make 更高级的编译配置工具。一些使用 CMake 作为项目架构系统的知名开源项目有 [VTK](http://www.vtk.org/)、[ITK](http://www.itk.org/)、[KDE](http://kde.org/)、[OpenCV](http://www.opencv.org.cn/opencvdoc/2.3.2/html/modules/core/doc/intro.html)、[OSG](http://www.openscenegraph.org/) 等 [[1\]](https://www.hahack.com/codes/cmake/#fn1)。
-
 在 linux 平台下使用 CMake 生成 Makefile 并编译的流程如下：
 
 1. 编写 CMake 配置文件 CMakeLists.txt 。
 2. 执行命令 `cmake PATH` 或者 `ccmake PATH` 生成 Makefile **1** **1**`ccmake` 和 `cmake` 的区别在于前者提供了一个交互式的界面。。其中， `PATH` 是 CMakeLists.txt 所在的目录。
 3. 使用 `make` 命令进行编译。
 
-本文将从实例入手，一步步讲解 CMake 的常见用法，文中所有的实例代码可以在[这里](https://github.com/wzpan/cmake-demo)找到。如果你读完仍觉得意犹未尽，可以继续学习我在文章末尾提供的其他资源。
-
-## 入门案例：单个源文件
+## 单个源文件
 
 本节对应的源代码所在目录：[Demo1](https://github.com/wzpan/cmake-demo/tree/master/Demo1)。
 
@@ -57,7 +24,7 @@ CMake就是针对上面问题所设计的工具：它首先允许开发者编写
  */
 double power(double base, int exponent)
 {
-    int result = base;
+    double result = base;
     int i;
     
     if (exponent == 0) {
@@ -96,10 +63,6 @@ project (Demo1)
 add_executable(Demo main.cc)
 ```
 
-CMakeLists.txt 的语法比较简单，由命令、注释和空格组成，其中命令是不区分大小写的。符号 `#` 后面的内容被认为是注释。命令由命令名称、小括号和参数组成，参数之间使用空格进行间隔。
-
-对于上面的 CMakeLists.txt 文件，依次出现了几个命令：
-
 1. `cmake_minimum_required`：指定运行此配置文件所需的 CMake 的最低版本；
 2. `project`：参数值是 `Demo1`，该命令表示项目的名称是 `Demo1` 。
 3. `add_executable`： 将名为 [main.cc](http://main.cc/) 的源文件编译成一个名称为 Demo 的可执行文件。
@@ -130,13 +93,7 @@ Linking C executable Demo
 [100%] Built target Demo
 [ehome@xman Demo1]$ ./Demo 5 4
 5 ^ 4 is 625
-[ehome@xman Demo1]$ ./Demo 7 3
-7 ^ 3 is 343
-[ehome@xman Demo1]$ ./Demo 2 10
-2 ^ 10 is 1024
 ```
-
-
 
 ## 多个源文件
 
@@ -280,8 +237,6 @@ add_executable(Demo ${DIR_SRCS})
 target_link_libraries (Demo  ${EXTRA_LIBS})
 ```
 
-其中：
-
 1. 第7行的 `configure_file` 命令用于加入一个配置头文件 config.h ，这个文件由 CMake 从 [config.h.in](http://config.h.in/) 生成，通过这样的机制，将可以通过预定义一些参数和变量来控制代码的生成。
 2. 第13行的 `option` 命令添加了一个 `USE_MYMATH` 选项，并且默认值为 `ON` 。
 3. 第17行根据 `USE_MYMATH` 变量的值来决定是否使用我们自己编写的 MathFunctions 库。
@@ -332,7 +287,7 @@ int main(int argc, char *argv[])
 
 #### 编译项目
 
-现在编译一下这个项目，为了便于交互式的选择该变量的值，可以使用 `ccmake` 命令也可以使用 `cmake -i` 命令，该命令会提供一个会话式的交互式配置界面。：
+现在编译一下这个项目，为了便于交互式的选择该变量的值，可以==使用 `ccmake` 命令==，该命令会提供一个会话式的交互式配置界面。：
 
 [![CMake的交互式配置界面](figures/ccmake.png)](https://www.hahack.com/images/cmake/ccmake.png)
 
@@ -348,8 +303,6 @@ int main(int argc, char *argv[])
 [ehome@xman Demo4]$ ./Demo
 Now we use our own MathFunctions library. 
  7 ^ 3 = 343.000000
- 10 ^ 5 = 100000.000000
- 2 ^ 10 = 1024.000000
 ```
 
 此时 config.h 的内容为：
@@ -366,8 +319,6 @@ Now we use our own MathFunctions library.
 [ehome@xman Demo4]$ ./Demo
 Now we use the standard library. 
  7 ^ 3 = 343.000000
- 10 ^ 5 = 100000.000000
- 2 ^ 10 = 1024.000000
 ```
 
 此时 config.h 的内容为：
@@ -403,7 +354,7 @@ install (FILES "${PROJECT_BINARY_DIR}/config.h"
          DESTINATION include)
 ```
 
-通过上面的定制，生成的 Demo 文件和 MathFunctions 函数库 libMathFunctions.o 文件将会被复制到 `/usr/local/bin` 中，而 MathFunctions.h 和生成的 config.h 文件则会被复制到 `/usr/local/include` 中。我们可以验证一下**3** **3**顺带一提的是，这里的 `/usr/local/` 是默认安装到的根目录，可以通过修改 `CMAKE_INSTALL_PREFIX` 变量的值来指定这些文件应该拷贝到哪个根目录。：
+通过上面的定制，生成的 Demo 文件和 MathFunctions 函数库 libMathFunctions.o 文件将会被复制到 ==`/usr/local/bin`== 中，而 MathFunctions.h 和生成的 config.h 文件则会被复制到 ==`/usr/local/include`== 中。我们可以验证一下,顺带一提的是，这里的 `/usr/local/` 是默认安装到的根目录，可以通过修改 `CMAKE_INSTALL_PREFIX` 变量的值来指定这些文件应该拷贝到哪个根目录。：
 
 ```bash
 [ehome@xman Demo5]$ sudo make install
@@ -420,6 +371,11 @@ Demo  libMathFunctions.a
 [ehome@xman Demo5]$ ls /usr/local/include
 config.h  MathFunctions.h
 ```
+
+### 卸载安装的程序
+
+1. 进入build目录，运行完成make install 之后目录下会生成install_manifest.txt文件
+2. 通过`cat install_manifest.txt | sudo xargs rm`或者是`xargs rm < install_manifest.txt`
 
 ### 为工程添加测试
 
@@ -448,7 +404,7 @@ set_tests_properties (test_2_10
  PROPERTIES PASS_REGULAR_EXPRESSION "is 1024")
 ```
 
-上面的代码包含了四个测试。第一个测试 `test_run` 用来测试程序是否成功运行并返回 0 值。剩下的三个测试分别用来测试 5 的 平方、10 的 5 次方、2 的 10 次方是否都能得到正确的结果。其中 `PASS_REGULAR_EXPRESSION` 用来测试输出是否包含后面跟着的字符串。
+上面的代码包含了四个测试。第一个测试 `test_run` 用来测试程序是否成功运行并返回 0 值。剩下的三个测试分别用来测试 5 的 平方、10 的 5 次方、2 的 10 次方是否都能得到正确的结果。其中 ==`PASS_REGULAR_EXPRESSION` 用来测试输出是否包含后面跟着的字符串。==
 
 让我们看看测试的结果：
 
@@ -488,7 +444,7 @@ do_test (2 10 "is 1024")
 
 ## 支持 gdb
 
-让 CMake 支持 gdb 的设置也很容易，只需要指定 `Debug` 模式下开启 `-g` 选项：
+==让 CMake 支持 gdb 的设置也很容易，只需要指定 `Debug` 模式下开启 `-g` 选项==：
 
 ```cmake
 set(CMAKE_BUILD_TYPE "Debug")
@@ -506,7 +462,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
 
 #### 添加 CheckFunctionExists 宏
 
-首先在顶层 CMakeLists 文件中添加 CheckFunctionExists.cmake 宏，并调用 `check_function_exists` 命令测试链接器是否能够在链接阶段找到 `pow` 函数。
+==首先在顶层 CMakeLists 文件中添加 CheckFunctionExists.cmake 宏，并调用 `check_function_exists` 命令测试链接器是否能够在链接阶段找到 `pow` 函数。==
 
 ```cmake
 # 检查系统是否支持 pow 函数
@@ -514,13 +470,11 @@ include (${CMAKE_ROOT}/Modules/CheckFunctionExists.cmake)
 check_function_exists (pow HAVE_POW)
 ```
 
-将上面这段代码放在 `configure_file` 命令前。
+==将上面这段代码放在 `configure_file` 命令前。==
 
 #### 预定义相关宏变量
 
 接下来修改 [config.h.in](http://config.h.in/) 文件，预定义相关的宏变量。
-
-
 
 ```ini
 // does the platform provide pow function?#cmakedefine HAVE_POW
