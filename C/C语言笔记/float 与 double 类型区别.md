@@ -6,8 +6,6 @@
 
 **double 双精度浮点数**在机内占 8 个字节，用 64 位二进制描述。
 
-![img](https://www.runoob.com/wp-content/uploads/2018/07/float-and-double.jpg)
-
 浮点数在机内用指数型式表示，分解为：**数符，尾数，指数符，指数**四部分。
 
 数符占 1 位二进制，表示数的正负。
