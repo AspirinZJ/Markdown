@@ -108,6 +108,24 @@ EXCLUDE_FROM_ALL：将这个目录从编译过程中排除
 
 `link_directories(路径1 路径2...)`添加非标准的共享库搜索路径
 
+```cmake
+cmake_minimum_required(VERSION 2.8.9)
+project (TestLibrary)
+
+#For the shared library:
+set ( PROJECT_LINK_LIBS libtestStudent.so )
+link_directories( ~/exploringBB/extras/cmake/studentlib_shared/build )
+
+#For the static library:
+#set ( PROJECT_LINK_LIBS libtestStudent.a )
+#link_directories( ~/exploringBB/extras/cmake/studentlib_static/build )
+
+include_directories(~/exploringBB/extras/cmake/studentlib_shared/include)
+
+add_executable(libtest libtest.cpp)
+target_link_libraries(libtest ${PROJECT_LINK_LIBS} )
+```
+
 ### target_link_libraries
 
 `target_link_libraries(目标名称 库1 库2)` 为target添加需要链接的共享库
@@ -147,6 +165,88 @@ OPTIONAL参数的左右是文件不存在也不会产生错误
 可以载入一个模块，也可以载入预定义模块(模块会在CMAKE_MODULE_PATH)指定的路径进行搜索
 
 载入的内容将在处理到INCLUDE语句时直接执行
+
+### install
+
+将库或可执行文件安装到指定目录
+
+```cmake
+install(TARGETS 库名或可执行文件名 DESTINATION 安装目录)
+```
+
+例子：
+
+```bash
+jackzhang@Deepin:~/exploringBB/extras/cmake/studentlib_shared$ tree
+.
+├── CMakeLists.txt
+├── include
+│   └── Student.h
+└── src
+    └── Student.cpp
+
+2 directories, 3 files
+```
+
+CMakeLists.txt文件内容如下：
+
+```cmake
+cmake_minimum_required(VERSION 2.8.9)
+project(directory_test)
+set(CMAKE_BUILD_TYPE Release)
+
+#Bring the headers, such as Student.h into the project
+include_directories(include)
+
+#However, the file(GLOB...) allows for wildcard additions:
+file(GLOB SOURCES "src/*.cpp")
+
+#Generate the shared library from the sources
+add_library(testStudent SHARED ${SOURCES})
+
+#Set the location for library installation -- i.e., /usr/lib in this case
+# not really necessary in this example. Use "sudo make install" to apply
+install(TARGETS testStudent DESTINATION /usr/lib)
+```
+
+
+
+###  file
+
+The `file()` command is used to add the source files to the project. `GLOB` (or `GLOB_RECURSE`) is used to create a list of all of the files that meet the globbing expression (i.e., “**src/\*.cpp**“) and add them to a variable.
+
+例如:
+
+```bash
+jackzhang@Deepin:~/exploringBB/extras/cmake/student$ tree
+.
+├── CMakeLists.txt
+├── include
+│   └── Student.h
+└── src
+    ├── mainapp.cpp
+    └── Student.cpp
+
+2 directories, 4 files
+```
+
+CMakeLists.txt中的内容
+
+```cmake
+cmake_minimum_required(VERSION 2.8.9)
+project(directory_test)
+ 
+#Bring the headers, such as Student.h into the project
+include_directories(include)
+ 
+#Can manually add the sources using the set command as follows:
+#set(SOURCES src/mainapp.cpp src/Student.cpp)
+ 
+#However, the file(GLOB...) allows for wildcard additions:
+file(GLOB SOURCES "src/*.cpp")
+ 
+add_executable(testStudent ${SOURCES})
+```
 
 ### find_
 
@@ -316,16 +416,51 @@ FOREACH指令的使用方法有三种形式：
    581114
    ```
 
-   ### option
+### option
 
-   option 提供一个用户可以任选的选项。语法如下
+option 提供一个用户可以任选的选项。语法如下
 
-   ```cmake
-   option(<option_variable> "help string describing option" [initial value])
-   ```
-
+```cmake
+option(<option_variable> "help string describing option" [initial value])
+```
 
    option 提供选项让用户选择是 ON 或者 OFF ，如果没有提供初始化值，使用OFF。也就是说默认的值是OFF。但是请注意：这个option命令和你本地是否存在编译缓存的关系很大。所以，如果你有关于 option 的改变，那么、请你务必清理 CMakeCache.txt 和 CMakeFiles 文件夹。还有，请使用标准的 [initial value] 值 ON 或者 OFF。
+
+### list
+
+```cmake
+list(LENGTH <list><output variable>)
+list(GET <list> <elementindex> [<element index> ...] <output variable>)
+list(APPEND <list><element> [<element> ...])
+list(FIND <list> <value><output variable>)
+list(INSERT <list><element_index> <element> [<element> ...])
+list(REMOVE_ITEM <list> <value>[<value> ...])
+list(REMOVE_AT <list><index> [<index> ...])
+list(REMOVE_DUPLICATES <list>)
+list(REVERSE <list>)
+list(SORT <list>)
+```
+
+LENGTH返回列表的长度
+GET返回列表中指定下标的元素
+APPEND添加新元素到列表中
+INSERT 将新元素插入到列表中指定的位置
+REMOVE_ITEM从列表中删除某个元素
+REMOVE_AT从列表中删除指定下标的元素
+REMOVE_DUPLICATES从列表中删除重复的元素
+REVERSE 将列表的内容实地反转，改变的是列表本身，而不是其副本
+SORT 将列表按字母顺序实地排序，改变的是列表本身，而不是其副本
+
+### set_property & source_group
+
+对于有编译目标的单元（即有ADD_EXECUTABLE或者ADD_LIBRARY），那么我们通过一下命令可以把这个编译单元放到
+某个目录下：
+
+```cmake
+SET_PROPERTY(TARGET trivial PROPERTY FOLDER "libraries")  
+```
+
+SET_PPRPERTY第一个参数TARGET是固定值,第二个trivial就是编译单元的名称，第三个PROPERTY，第四个FOLDER都是固定值，第五个libiraries是要放到的目录名称。目录支持层级结构，这里用/来划分层级结构，如libraries/cnn。
 
 # gcc编译的流程
 
