@@ -1,0 +1,11 @@
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+
+add_executable(001 01_简单的多线程案例.cpp)
+add_executable(002 02_mutex互斥量.cpp)
+add_executable(003 03_lock_guard对象.cpp)
+add_executable(004 04_unique_lock.cpp)
+add_executable(005 05_condition_variable.cpp)
+add_executable(006 06_多线程循环打印.cpp)
+add_executable(007 07_原子变量.cpp)
+add_executable(008 08_future_promise.cpp)
+add_executable(009 09_future与package_task的使用.cpp)
