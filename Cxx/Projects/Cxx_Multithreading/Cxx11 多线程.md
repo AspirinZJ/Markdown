@@ -48,7 +48,7 @@ int ThreadProc2()
         this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
-    return 0;
+    return 0;理侯爵是一个暴虐的父亲，与道格拉斯长期以来争
 }
 
 int main()
@@ -490,22 +490,18 @@ int main()
 
 
 
-　　，std::async比std::packaged_task，std::promise中，std::thread更高一层，它可以直接用来创建异步的task，异步的结果也保存在future中。完成后，外面再通过future.get/wait来获取这个未来的结果，强烈推荐使用async，我们不需要关注异步任务的结果，只要等待任务完成获取值就行了。
+==std::async比std::packaged_task，std::promise中，std::thread更高一层，它可以直接用来创建异步的task，异步的结果也保存在future中。完成后，外面再通过future.get/wait来获取这个未来的结果，强烈推荐使用async，我们不需要关注异步任务的结果，只要等待任务完成获取值就行了。==
 
-　　现在来看看std::async的原型async(std::launch::async | std::launch::deferred, f, args...)，第一个参数是线程的创建策略，有两种策略，默认的策略是立即创建线程：
+现在来看看==std::async的原型async(std::launch::async | std::launch::deferred, f, args...)，第一个参数是线程的创建策略，有两种策略，默认的策略是立即创建线程：==
 
- 
-
-- std::launch::async：在调用async就开始创建线程。
-- std::launch::deferred：延迟加载方式创建线程。调用async时不创建线程，直到调用了future的get或者wait时才创建线程。
-
- 
+- ==std::launch::async：在调用async就开始创建线程。==
+- ==std::launch::deferred：延迟加载方式创建线程。调用async时不创建线程，直到调用了future的get或者wait时才创建线程。==
 
 第二个参数是线程函数，第三个参数是线程函数的参数。
 
 代码示例：
 
-```
+```c++
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -528,55 +524,46 @@ int main()
 }
 ```
 
-　　[]()这是c++11里面lambda表达式用法
+[]()这是c++11里面lambda表达式用法
 
  
 
-# 7.std::future::wait_for（）函数作用 
+# 7.std::future::wait_for函数
 
-　　函数原型：
+函数原型：
 
 template< class Rep, class Period >
 [std::future_status](http://zh.cppreference.com/w/cpp/thread/future_status) wait_for( const [std::chrono::duration](http://zh.cppreference.com/w/cpp/chrono/duration)<Rep,Period>& timeout_duration ) const;
 
- 
+　　==等待结果变得可用。阻塞直至经过指定的 `timeout_duration` ，或结果变为可用，两者的先到来者。返回值鉴别结果的状态。==此函数可能由于调度或资源争议延迟而阻塞长于 `timeout_duration` 。
 
-　　等待结果变得可用。阻塞直至经过指定的 `timeout_duration` ，或结果变为可用，两者的先到来者。返回值鉴别结果的状态。
+推荐标准库用稳定时钟度量时长。若实现用系统时钟代替，则等待时间可能也对时钟调整敏感。若调用此函数前 valid()== false 则行为未定义。
 
-此函数可能由于调度或资源争议延迟而阻塞长于 `timeout_duration` 。
+**参数**
 
-推荐标准库用稳定时钟度量时长。若实现用系统时钟代替，则等待时间可能也对时钟调整敏感。
+timeout_duration: 要阻塞的最大时长
 
-若调用此函数前 [valid()](https://zh.cppreference.com/w/cpp/thread/future/valid)== false 则行为未定义。
+**返回值**
 
-### 参数
+| 常量                    | 解释                     |
+| ----------------------- | ------------------------ |
+| future_status::deferred | 要计算结果的函数仍未启动 |
+| future_status::ready    | 结果就绪                 |
+| future_status::timeout  | 已经过时限               |
 
-| timeout_duration | -    | 要阻塞的最大时长 |
-| ---------------- | ---- | ---------------- |
-|                  |      |                  |
-
-### 返回值
-
-|                                                              |                          |
-| ------------------------------------------------------------ | ------------------------ |
-| 常量                                                         | 解释                     |
-| [`future_status::deferred`](https://zh.cppreference.com/w/cpp/thread/future_status) | 要计算结果的函数仍未启动 |
-| [`future_status::ready`](https://zh.cppreference.com/w/cpp/thread/future_status) | 结果就绪                 |
-| [`future_status::timeout`](https://zh.cppreference.com/w/cpp/thread/future_status) | 已经过时限               |
-
-### 异常
+**异常**
 
 时钟、时间点或时长在执行中可能抛的任何异常（标准库提供的时钟、时间点和时长决不抛出）。
 
-### 注意
+**注意**
 
-鼓励实现在调用前检测 valid == false 的情况并抛出以 [future_errc::no_state](https://zh.cppreference.com/w/cpp/thread/future_errc) 为 error_condition 的 [future_error](https://zh.cppreference.com/w/cpp/thread/future_error)
+鼓励==实现在调用前检测 valid == false 的情况并抛出以 future_errc::no_state 为 error_condition 的 future_error==
 
  
 
 代码示例：
 
-```
+```c++
 #include <iostream>
 #include <future>
 #include <thread>
@@ -585,9 +572,7 @@ template< class Rep, class Period >
 int main()
 {
     std::future<int> future = std::async(std::launch::async, [](){ 
-        std::this_thread::sleep_for(std::chrono::seconds(3));
-        return 8;  
-    }); 
+        std::this_thread::sleep_for(std::chrono::seconds(3));  return 8;}); 
  
     std::cout << "waiting...\n";
     std::future_status status;
@@ -608,14 +593,10 @@ int main()
 
 可能结果：
 
-```
+```c++
 waiting...
 timeout
 timeout
 ready!
 result is 8
 ```
-
- 
-
-后面还会出很多一系列的入门教程，可以关注我噢。（我博客难道写的不清楚吗，你们还不关注我？？？小声bb）。。。。**hhhhhhhh**
