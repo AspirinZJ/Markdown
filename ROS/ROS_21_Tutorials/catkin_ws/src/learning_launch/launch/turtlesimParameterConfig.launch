@@ -1,0 +1,16 @@
+<launch>
+    <!-- 存储一个参数到变量管理器的字典中 -->
+    <param name="/turtle_number" value="2"/>
+    <!-- 启动一个节点 -->
+    <node pkg="turtlesim" type="turtlesim_node" name="turtlesim_node">
+        <!-- 存储2个参数到变量管理器的字典中 -->
+        <param name="turtle_name1" value="Tom"/>
+        <param name="turtle_name2" value="Jerry"/>
+
+        <!-- 查找learing_launch功能包，并将其地址保存到变量中立刻使用 -->
+        <rosparam file="$(find learning_launch)/config/param.yaml" command="load"/>
+    </node>
+
+    <!-- 启动一个节点 -->
+    <node pkg="turtlesim" type="turtle_teleop_key" name="turtle_teleop_key" output="screen"/>
+</launch>

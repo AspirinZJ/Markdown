@@ -1,0 +1,8 @@
+A: 123
+B: "hello"
+
+group_namespace:
+  C: 456
+  D: "hi"
+  subgroup_namespace:
+    E: 789
