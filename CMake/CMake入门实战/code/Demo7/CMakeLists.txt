@@ -22,7 +22,7 @@ if (NOT HAVE_POW)
   include_directories ("${PROJECT_SOURCE_DIR}/math")
   add_subdirectory (math)  
   set (EXTRA_LIBS ${EXTRA_LIBS} MathFunctions)
-endif (NOT HAVE_POW)
+endif ()
 
 # 查找当前目录下的所有源文件
 # 并将名称保存到 DIR_SRCS 变量
@@ -53,7 +53,7 @@ macro (do_test arg1 arg2 result)
   add_test (test_${arg1}_${arg2} Demo ${arg1} ${arg2})
   set_tests_properties (test_${arg1}_${arg2}
     PROPERTIES PASS_REGULAR_EXPRESSION ${result})
-endmacro (do_test)
+endmacro ()
  
 # 利用 do_test 宏，测试一系列数据
 do_test (1.1 2 "is 1.21")

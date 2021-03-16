@@ -76,3 +76,16 @@ rdesktop -g 90% vlab-rdp.seas.upenn.edu
 >   ```
 
 把上面的文件放到`~/.local/share/applications/matlab.desktop`
+
+# 取消按Shift在搜狗输入法之间切换
+
+先在输入法设置里面将额外的激活输入法快捷键设置为禁用
+
+<img src="pics/Linux_XFCE/image-20210228104627709.png" alt="image-20210228104627709" style="zoom: 67%;" />
+
+再将配置文件属性更改为只读
+
+```bash
+chmod 444 ~/.config/fcitx/config
+```
+

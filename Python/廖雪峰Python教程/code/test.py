@@ -1,32 +1,21 @@
-# -*- coding: utf-8 -*- 
-# Created by jackzhang on 02/27/2021
-class Screen(object):
-    @property
-    def width(self):
-        return self._width
-
-    @width.setter
-    def width(self, width):
-        self._width = width
-
-    @property
-    def height(self):
-        return self._height
-
-    @height.setter
-    def height(self, height):
-        self._height = height
-
-    @property
-    def resolution(self):
-        return self._width * self._height
+from functools import reduce
 
 
-s = Screen()
-s.width = 1024
-s.height = 768
-print('resolution =', s.resolution)
-if s.resolution == 786432:
-    print('测试通过!')
-else:
-    print('测试失败!')
+def str2num(s):
+    return float(s)
+
+
+def calc(exp):
+    ss = exp.split('+')
+    ns = map(str2num, ss)
+    return reduce(lambda acc, x: acc + x, ns)
+
+
+def main():
+    r = calc('100 + 200 + 345')
+    print('100 + 200 + 345 =', r)
+    r = calc('99 + 88 + 7.6')
+    print('99 + 88 + 7.6 =', r)
+
+
+main()
